@@ -54,7 +54,6 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
-    "verified_email_field",
     "dj_rest_auth",
     'django.contrib.sites',
     'allauth',

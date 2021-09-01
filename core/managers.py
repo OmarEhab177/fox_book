@@ -11,3 +11,4 @@ class RecentBook(models.Manager):
 class Last10Books(models.Manager):
     def get_queryset(self):
         return super(Last10Books, self).get_queryset().filter(is_active=True).order_by('-created_at')[:2]
+        

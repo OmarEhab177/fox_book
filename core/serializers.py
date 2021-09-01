@@ -1,7 +1,7 @@
 import json
 from rest_framework import serializers
 from core.models import (Book, BookCategory, Category, Collection,
-BookCollection, Page, BookPages, Libs)
+BookCollection, Page, BookPages, Libs, Contact, NewContact, ContactReplies)
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,7 +26,9 @@ class BookSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "is_active",
-            "favorites"
+            "favorites",
+            "get_rating",
+            # "is_favorite"
             
         )
 
@@ -235,3 +237,82 @@ class RetrieveLibsSerializer(serializers.ModelSerializer):
             "book_id",
         )
         depth = 1
+
+class ContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contact
+        fields = (
+            "id",
+            "user_id",
+            "email",
+            "msg",
+            "read_at",
+            "created_at",
+            "updated_at"
+        )
+
+
+
+
+class CreateContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contact
+        fields = (
+            "user_id",
+            "email",
+            "msg",
+        )
+
+
+class NewContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NewContact
+        fields = (
+            "id",
+            "device",
+            "email",
+            "msg",
+            "read_at",
+            "created_at",
+            "updated_at"
+        )
+
+
+class CreateNewContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NewContact
+        fields = (
+            "device",
+            "email",
+            "msg",
+        )
+
+
+class CreateContactRepliesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ContactReplies
+        fields = (
+            "contact_id",
+            "sender_id",
+            "receiver_id",
+            "replay",
+        )
+class ContactRepliesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ContactReplies
+        fields = (
+            "id",
+            "contact_id",
+            "sender_id",
+            "receiver_id",
+            "replay",
+            "created_at",
+            "updated_at"
+        )
+

@@ -1,12 +1,14 @@
+import re
 from django.shortcuts import render
-from rest_framework import serializers
-from rest_framework.serializers import Serializer
+from fcm_django.models import FCMDevice
 
-# Create your views here.
-from .models import Book , BookCategory, Category, BookCollection, Collection, Page, Libs
+from .models import (Book , BookCategory, Category, BookCollection, Collection, Page, Libs, Contact, NewContact,
+ContactReplies)
+
 from .serializers import (BookSerializer, BookCategorySerializer, CategoryBookSerializer, CategoryLast10BookSerializer, 
-BookCollectionSerializer, FavoriteBookSerializer, BookPagesSerializer, PageSerializer, FavoritePageSerializer, LibsSerializer,
-RetrieveLibsSerializer)
+BookCollectionSerializer, FavoriteBookSerializer, BookPagesSerializer, NewContactSerializer, PageSerializer, FavoritePageSerializer, LibsSerializer,
+RetrieveLibsSerializer, CreateContactSerializer, CreateNewContactSerializer, ContactSerializer, CreateContactRepliesSerializer, ContactRepliesSerializer)
+
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
@@ -21,6 +23,7 @@ class BooksListMethod(viewsets.ViewSet):
     queryset = Book.objects.none()
 
     def list(self, request):
+        user_id = request.user.id
         books = Book.objects.all().filter(is_active=True)
         today_book = request.GET.get("today")
         if (today_book == "True"):
@@ -29,9 +32,11 @@ class BooksListMethod(viewsets.ViewSet):
         if (recent_books == "True"):
             books = Book.recent_books.all()
         serializer = BookSerializer(books, many=True)
+
         return Response(serializer.data, status=200)
     
     def retrieve(self, request, pk):
+        user_id = request.user
         books = Book.objects.all().filter(is_active=True)
         book = books.filter(id=pk)
         if len(book) != 0:
@@ -214,6 +219,108 @@ class LibsMethod(viewsets.ViewSet):
         ser = RetrieveLibsSerializer(libs, many=True)
         return Response(ser.data, status=200)
 
+
+class ContactsMethod(viewsets.ViewSet):
+
+    authentication_classes=[JWTAuthentication,TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Contact.objects.none()
+
+    def create(self, request):
+        user_id = request.user.id
+        data = JSONParser().parse(request)
+        email = data['email']
+        msg = data["msg"]
+        contact_data = {"user_id":user_id, "email":email, "msg":msg}
+        serializer = CreateContactSerializer(data=contact_data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Contact created successfully", status=201)
+        return Response("Invalid data!", status=400)
+    
+    permission_classes = [IsAuthenticated]
+    def list(self, request):
+        contacts = Contact.objects.all()
+        ser = ContactSerializer(contacts, many=True)
+        return Response(ser.data, status=200)
+
+    permission_classes = [IsAuthenticated]
+    def retrieve(self, request, pk):
+        contact = Contact.objects.all().filter(id=pk)
+        if len(contact) == 0:
+            return Response("Contact not found!", status=404)
+        ser = ContactSerializer(contact, many=True)
+        return Response(ser.data, status=200)
+
+
+class NewContactMethod(viewsets.ViewSet):
+
+    permission_classes = [AllowAny]
+    queryset = NewContact.objects.none()
+
+    def create(self, request):
+        device = FCMDevice.objects.all().first().id
+        data = JSONParser().parse(request)
+        email = data['email']
+        msg = data["msg"]
+        new_contact_data = {"device":device, "email":email, "msg":msg}
+        ser = CreateNewContactSerializer(data=new_contact_data)
+        if ser.is_valid():
+            ser.save()
+            return Response("Contact created successfully", status=201)
+        return Response("Invalid data!", status=400)
+    
+    permission_classes = [IsAuthenticated]
+    def list(self, request):
+        contacts = NewContact.objects.all()
+        ser = NewContactSerializer(contacts, many=True)
+        return Response(ser.data, status=200)
+
+    permission_classes = [IsAuthenticated]
+    def retrieve(self, request, pk):
+        contact = NewContact.objects.all().filter(id=pk)
+        if len(contact) == 0:
+            return Response("Contact not found!", status=404)
+        ser = NewContactSerializer(contact, many=True)
+        return Response(ser.data, status=200)
+
+class ContactRepliesMethod(viewsets.ViewSet):
+
+    queryset = NewContact.objects.none()
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request):
+        data = JSONParser().parse(request)
+        sender_id = FCMDevice.objects.all().first().id
+        contact_id = data["contact_id"]
+        replay = data['replay']
+        try:
+            receiver = NewContact.objects.get(id=contact_id)
+        except:
+            return Response("Contact id not found!", status=404)
+        receiver_id = receiver.device.id
+        ser_data = {"contact_id":contact_id, "sender_id":sender_id, "receiver_id":receiver_id, "replay":replay}
+        ser = CreateContactRepliesSerializer(data=ser_data)
+        if ser.is_valid():
+            ser.save()
+            return Response("Contact replay created successfully!", status=201)
+        return Response("Invalid data!", status=400)
+    
+    def list(self, request):
+        contact_replies = ContactReplies.objects.all()
+        ser = ContactRepliesSerializer(contact_replies, many=True)
+        return Response(ser.data, status=200)
+    
+    def retrieve(self, request, pk):
+        contact_replay = ContactReplies.objects.all().filter(id=pk)
+        if len(contact_replay) == 0:
+            return Response("Contact_replay not found!", status=404)
+        ser = ContactRepliesSerializer(contact_replay, many=True)
+        return Response(ser.data, status=200)
+
+
+
+        
 
 
 

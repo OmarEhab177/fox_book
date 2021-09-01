@@ -4,3 +4,5 @@ media/
 .DS_Store
 *.pyc
 __pycache__
+dashboard
+dashboard/

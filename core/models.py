@@ -57,6 +57,20 @@ class Book(models.Model):
     class Meta:
         ordering = ('-created_at',)
 
+    def get_rating(self):
+        total = sum(int(review['rate']) for review in self.reviews.values())
+
+        if self.reviews.count() > 0:
+            return total / self.reviews.count()
+        else:
+            return 0
+
+    # def is_favorite(self,request):
+    #     fav = self.objects.filter(favorites=request.user.id)
+    #     if fav:
+    #         return True
+    #     return False
+
     def __str__(self):
         return self.name
 
@@ -142,16 +156,6 @@ class BookCollection(models.Model):
         return self.book_id.name + "  in " + self.collection_id.name
 
 
-# class Favorites(models.Model):
-#     page_num = models.ForeignKey(BookPages, on_delete=models.CASCADE, null=True, blank=True)
-#     part_of_text = models.TextField(null=True, blank=True)
-#     book_id = models.ForeignKey(Book, on_delete=models.CASCADE, null=True, blank=True)
-#     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-
-
 
 class Libs(models.Model):
     page_id = models.ForeignKey(Page, on_delete=models.CASCADE, default=None, blank=True, null=True)
@@ -159,7 +163,6 @@ class Libs(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
     class Meta:
         unique_together = [
@@ -170,11 +173,16 @@ class Libs(models.Model):
 
 
 class Rates(models.Model):
-    rate = models.PositiveIntegerField()
-    book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    rate = models.PositiveIntegerField(default=1)
+    book_id = models.ForeignKey(Book, related_name="reviews", on_delete=models.CASCADE)
+    user_id = models.ForeignKey(CustomUser, related_name="reviews", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta(object):
+        unique_together = [
+            ('user_id', 'book_id')
+        ]
 
 class Plan(models.Model):
     name = models.CharField(max_length=250)
@@ -196,16 +204,30 @@ class UserPlan(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class Contacts(models.Model):
+class Contact(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.CharField(max_length=250)
     msg = models.TextField()
-    read_at = models.DateTimeField()
+    read_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.email
+
+class NewContact(models.Model):
+    device = models.ForeignKey(FCMDevice, on_delete=models.CASCADE)
+    email = models.CharField(max_length=250)
+    msg = models.TextField()
+    read_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.email
+
 class ContactReplies(models.Model):
-    contact_id = models.ForeignKey(Contacts, on_delete=models.CASCADE)
+    contact_id = models.ForeignKey(Contact, on_delete=models.CASCADE)
     sender_id = models.ForeignKey(FCMDevice, on_delete=models.CASCADE, related_name="sender_device")
     receiver_id = models.ForeignKey(FCMDevice, on_delete=models.CASCADE, related_name="receiver_device")
     replay = models.TextField()
