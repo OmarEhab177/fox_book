@@ -26,6 +26,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from fox_book import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path("test/api/v1/", include("core.urls")),
@@ -46,6 +48,26 @@ urlpatterns = [
 urlpatterns += [
     path("api/v1/", include("core.urls")),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# dashboard
+urlpatterns += [
+    # Menu    
+    path('',views.DashboardView.as_view(),name='dashboard'),# Dashboard
+    path('menu/calendar',views.CalendarView.as_view(),name='calendar'),# Calender
+    path('menu/chat',views.ChatView.as_view(),name='chat'),# Chat
+    path('menu/app-kanban-board',views.KanbanBoardView.as_view(),name='app-kanban-board'),# Kanban Board
+   
+    # Apps 
+    path('ecommerce/',include('ecommerce.urls')),# Ecommerce
+    path('email/',include('mail.urls')),# Email
+    path('layouts/',include('layouts.urls')),# Layout
+    path('pages/',include('utility.urls')),# Utility
+    path('components/',include('components.urls')),# Components
+    path('authentication/',include('authentication.urls')),# Authentication
+    
+    # path('admin/', admin.site.urls),# Admin
+]
+
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development
     urlpatterns += staticfiles_urlpatterns()
@@ -56,3 +78,5 @@ router.register('devices', FCMDeviceAuthorizedViewSet)
 urlpatterns += [
     path('devices/', include(router.urls)),
 ]
+
+LOGIN_URL = "authentication/login"

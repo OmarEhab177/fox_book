@@ -1,0 +1,196 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}   
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                
+                <section class="book-detail">
+                    <div class="col-12">
+                        <div class="product-detail">
+
+
+                            <section class="author-detail">
+
+                                <div class="row p-0 m-0 ">
+                                    <div class="col-2">
+                                        <div class="m-1 p-1">
+                                            <img src="{{ book.author_avatar.url }}" alt="{{ book.author }}" class="img-fluid mx-auto d-block rounded">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4 d-flex justify-content-start">
+                                        <div class="mt-4 mt-xl-3">
+                                            <h3 class="mt-1 mb-3">Author: {{ book.author }}</h3>
+                                            <!-- <h5>About Author: </h5>
+                                            <p class="mt-2">{{ book.about_author}}</p> -->
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-5">
+                                        <h5>About Author: </h5>
+                                        <p class="mt-2">{{ book.about_author}}</p>
+                                    </div>
+
+                                    <div class="col-1 product-like d-flex justify-content-end">
+                                        <div class="text-right">
+                                            <a href="{% url 'ecommerce-delete-book' book.id %}" class="btn btn-sm bg-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            <a href="{% url 'ecommerce-edit-book' book.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                            </section>
+
+                            <hr>
+                            <section class="book-detail">
+                                <div class="row p-0 m-0 ">
+
+                                    <div class="col-2">
+                                        <div >
+                                            <div class="m-1 p-1">
+                                                <img src="{{ book.book_image.url }}" alt="{{ book.name }}" class="img-fluid mx-auto d-block rounded">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4 d-flex justify-content-start">
+                                        <div class="mt-4 mt-xl-3">
+                                            <h3 class="mt-1 mb-3">Book: {{ book.name }}</h3>
+                                            <h4 class="mt-1 mb-3">Subtitle: {{ book.subtitle }}</h4>
+                                            <h5> Rating: {{ book.get_rating }} </h5>
+                                            {% if book.is_paid == True  %}
+                                                <h5 class="mt-3 mb-0 text-danger">Paid</h5>
+                                            {% else %}
+                                                <h5 class="mt-3 mb-0 text-success">Free</h5>
+                                            {% endif %}</h5>
+                                                
+                                        </div>
+                                    </div>
+
+                                    <div class="col-5">
+                                        <h5>About Book: </h5>
+                                        <p class="mt-3">{{ book.desc }}</p>
+                                    </div>
+
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <div class="row p-1 m-1">
+                        <div class="col-2">
+                            {% if book.is_paid == True  %}
+                                <h5 class=" text-danger">Paid</h5>
+                            {% else %}
+                                <h5 class="text-success">Free</h5>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-4">
+                            <div>
+                                Tags:
+                                {% for tag in book.tags.all  %}
+                                    <button type="button" class="btn btn-info btn-sm disabled" >{{tag }}</button>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            {% if book.is_recent_books == True %}
+                                <div class="product-ribbon badge bg-warning">
+                                    Recently
+                                </div>
+                            {% elif book.is_today == True %}
+                                <div class="product-ribbon badge bg-success">
+                                    Today
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-2">
+                            <h6>Show: {{ book.show}} </h6>
+                        </div>
+                        <div class="col-2">
+                            <h6>Searchable: {{ book.searchable}} </h6>
+                        </div>
+                        
+
+                    </div>
+
+                    <div class="row p-1 m-1">
+                        <div class="col-3">
+                            <div>
+                                <h6>For who: {{ book.for_who}}</h6>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            {% if book.is_active %}
+                                <div class="product-ribbon badge bg-success">
+                                    Active
+                                </div>
+                            {% else %}
+                            <div class="product-ribbon badge bg-Danger">
+                                Disabled
+                            </div>
+                            {% endif %}
+                            
+                        </div>
+                        <div class="col-4">
+                            Created at: {{ book.created_at}}
+                        </div>
+                        <div class="col-4">
+                            Updated at: {{ book.updated_at}}
+                        </div>
+                    </div>
+
+                    
+                </section>
+
+                <hr>
+                <div class="row">
+                    <a href="{% url 'ecommerce-add-pageToBook' book.id %}" class="  btn btn-sm btn-primary">
+                        Add page to this Book
+                    </a>
+                </div>
+                
+                <hr>
+                <section class="pages">
+                    <div class="row justify-content-center ">
+                        {% for page in book_pages  %}
+                            <section class="col-5 page border m-1 p-1">
+                                <div class="justify-content-end">
+                                    <div class="text-right">
+                                        <a href="{% url 'ecommerce-delete-page' page.page.id %}" class="btn btn-sm bg-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        <a href="{% url 'ecommerce-edit-page' page.page.id %}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="m-1 p-1 border">
+                                    <p class="justify-content-center">{{ page.page.page }}</p>
+                                </div>
+                            </section>
+                        {% endfor %}
+                        
+                    </div>
+                </section>
+
+                
+
+
+            </div>
+        </div>
+                               
+                               
+
+{% endblock content %}

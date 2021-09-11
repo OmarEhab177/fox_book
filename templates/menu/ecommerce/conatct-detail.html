@@ -1,0 +1,100 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}   
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                
+                <section class="book-detail">
+                    <div class="col-12">
+                        <div class="product-detail">
+
+
+                            <section class="author-detail">
+
+                                <div class="row p-0 m-0 ">
+                                   
+
+                                    <div class="col-5 d-flex justify-content-start">
+                                        <div class="mt-4 mt-xl-3">
+                                            <h3 class="mt-1 mb-3">Contact: {{ contact.email }}</h3>
+                                            <div class="p-1 m-1">
+                                                <h6 class="font-size-10">created_at: {{contact.created_at}}</h6>
+                                            </div>
+                                            <div class="p-1 m-1">
+                                                <h6 class="font-size-10">Updated_at: {{contact.updated_at}}</h6>
+                                            </div>
+                                            <div class="p-1 m-1">
+                                                <h6 class="font-size-10">Read_at: {{contact.read_at}}</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-6">
+                                        <h5>Message: </h5>
+                                        <p class="mt-2">{{ contact.msg }}</p>
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                            <hr>
+
+                            <h3 class="m-1 p-1">Replies</h3>
+
+                            <div class="row m-1 p-1 ">
+                                <a href="{% url 'ecommerce-add-contact-replay' contact.id %}" class="  btn btn-sm btn-primary">
+                                    Add Replay
+                                </a>
+                            </div>
+
+                            <section class="Books">
+                                <div class="row justify-content-center ">
+                                    {% for contact_rep in contact_reps  %}
+                                    <div class="col-xl-4 col-sm-6">
+                                        <div class="product-box">
+                                            <div class="product-img">
+                                                
+                                                <div class="product-like">
+                                                    <div class="text-right">
+                                                        <a href="{% url 'ecommerce-delete-contact-replay' contact_rep.id %}" class="btn btn-sm bg-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a> 
+                                                    </div>
+                                                </div>
+                                                <p class="font-size-12 mb-1">{{ contact_rep.replay}}<p>
+
+                                                
+
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    <h5 class="font-size-10">Sender: {{ contact_rep.sender_id}}</h5>
+                                                    <h5 class="font-size-10">receiver: {{ contact_rep.receiver_id}}</h5>
+                                                </div>
+                                                <div class="col-8">
+                                                    <h6 class="font-size-10">Created at: {{ contact_rep.created_at}}</h6>
+                                                    <h6 class="font-size-10">Updated at: {{ contact_rep.updated_at}}</h6>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    
+                                </div>
+                            </section>
+                            
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+                               
+                               
+
+{% endblock content %}

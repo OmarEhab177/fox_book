@@ -1,0 +1,136 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}   
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                
+                <section class="book-detail">
+                    <div class="col-12">
+                        <div class="product-detail">
+
+
+                            <section class="author-detail">
+
+                                <div class="row p-0 m-0 ">
+                                    <div class="col-2">
+                                        <div class="m-1 p-1">
+                                            <img src="{{ category.category_image.url }}" alt="{{ category.name }}" class="img-fluid mx-auto d-block rounded">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4 d-flex justify-content-start">
+                                        <div class="mt-4 mt-xl-3">
+                                            <h3 class="mt-1 mb-3">Category: {{ category.name }}</h3>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-5">
+                                        <h5>Description: </h5>
+                                        <p class="mt-2">{{ category.desc }}</p>
+                                    </div>
+
+                                    
+                                    
+                                </div>
+
+                                <div class="row p-1 m-1">
+                                    <div class="col-2">
+                                        <h6>Searchable: {{ category.searchable}} </h6>
+                                    </div>
+                                
+                                    <div class="col-2">
+                                        {% if category.is_active %}
+                                            <div class="product-ribbon badge bg-success">
+                                                Active
+                                            </div>
+                                        {% else %}
+                                        <div class="product-ribbon badge bg-warning">
+                                            Disabled
+                                        </div>
+                                            
+                                        {% endif %}
+                                        
+                                    
+                                    </div>
+                                    <div class="col-4">
+                                        Created at: {{ category.created_at}}
+                                    </div>
+                                    <div class="col-4">
+                                        Updated at: {{ category.updated_at}}
+                                    </div>
+                                </div>
+
+                            </section>
+
+                            <hr>
+
+                            <h3 class="m-1 p-1">Books</h3>
+
+                            <div class="row m-1 p-1 ">
+                                <a href="{% url 'ecommerce-add-book-to-category' category.id %}" class="  btn btn-sm btn-primary">
+                                    Add New Book to this category
+                                </a>
+                            </div>
+
+                            <section class="Books">
+                                <div class="row justify-content-center ">
+                                    {% for cat_book in cat_books  %}
+                                    <div class="col-xl-4 col-sm-6">
+                                        <div class="product-box">
+                                            <div class="product-img">
+                                                {% if cat_book.book_id.is_recent_books == True %}
+                                                <div class="product-ribbon badge bg-warning">
+                                                    Recently
+                                                </div>
+                                                {% elif cat_book.book_id.is_today == True %}
+                                                <div class="product-ribbon badge bg-success">
+                                                    Today
+                                                </div>
+                                                {% endif %}
+                                                <div class="product-like">
+                                                    <div class="text-right">
+                                                        <a href="{% url 'ecommerce-delete-book-category' cat_book.id %}" class="btn btn-sm bg-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                        <a href="{% url 'ecommerce-edit-book-category' cat_book.id %}" class="btn btn-sm bg-success">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        
+                                                    </div>
+                                                </div>
+                                                
+                                                <a href="{% url 'ecommerce-book-detail' cat_book.book_id.id %}" class="text-dark">
+                                                    <img style="height: 242px; width: 242px; background-size:cover"  src="{{ cat_book.book_id.book_image.url}}" alt="img-1" class="img-fluid mx-auto d-block">
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="text-center">
+                                                <p class="font-size-12 mb-1">{{ cat_book.book_id.author|truncatechars:20}}<p>
+                                                <h5 class="font-size-15"><a href="{% url 'ecommerce-book-detail' cat_book.book_id.id %}" class="text-dark">{{ cat_book.book_id.name}}</a></h5>
+                                               {% if cat_book.book_id.is_paid == True  %}
+                                                    <h5 class="mt-3 mb-0 text-danger">Paid</h5>
+                                                    {% else %}
+                                                    <h5 class="mt-3 mb-0 text-success">Free</h5>
+                                                {% endif %}
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    
+                                </div>
+                            </section>
+                            
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+                               
+                               
+
+{% endblock content %}

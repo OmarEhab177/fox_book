@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import environ
 from firebase_admin import initialize_app
+import mimetypes
+
 
 env = environ.Env()
 
@@ -63,6 +65,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     "rest_framework_simplejwt.token_blacklist",
     "fcm_django",
+    'crispy_forms',
 ]
 
 LOCAL_APPS = [
@@ -71,7 +74,16 @@ LOCAL_APPS = [
 
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+DASHBOARD_APPS = [
+    "authentication",
+    "components",
+    "ecommerce",
+    "layouts",
+    "mail",
+    "utility",
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + DASHBOARD_APPS
 
 SITE_ID = 1
 
@@ -80,6 +92,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -177,6 +190,7 @@ STATIC_ROOT = str(BASE_DIR / "staticfiles")
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [str(BASE_DIR / "static")]
 
+
 MEDIA_ROOT = str(BASE_DIR / "media")
 MEDIA_URL = "/media/"
 
@@ -227,3 +241,7 @@ FCM_APIKEY = "AAAASLxWDkU:APA91bExnrsZ2zO1bTGlvt8KNwQQZ8IzynyLTgHDoUnBppaXaVP0hX
 #      # default: False
 #     "DELETE_INACTIVE_DEVICES": True/False,
 # }
+
+
+
+mimetypes.add_type("text/css", ".css", True)

@@ -34,12 +34,12 @@ class Book(models.Model):
     about_author = models.TextField()
     book_image = models.ImageField(upload_to = 'photos/books/%y/%m/%d')
     author_avatar = models.ImageField(upload_to = 'photos/authors/%y/%m/%d')
-    desc = models.TextField()
+    desc = models.TextField(null=True, blank=True)
     subtitle = models.CharField(max_length=250)
     pdf_link = models.CharField(max_length=250)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    searchable = models.IntegerField()
-    show = models.IntegerField()
+    tags = models.ManyToManyField(Tag, related_name="book_tags", default=None, blank=True)
+    searchable = models.IntegerField(null=True, blank=True)
+    show = models.IntegerField(null=True, blank=True)
     for_who = models.CharField(max_length=250)
     is_today = models.BooleanField(default=True)
     is_paid =  models.BooleanField(default=False)
@@ -96,6 +96,9 @@ class Page(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     favorites = models.ManyToManyField(CustomUser, related_name="favorite_pages", default=None, blank=True)
+
+    def __str__(self):
+        return self.page[:25]
 
 class BookPages(models.Model):
     page = models.ForeignKey(Page, on_delete=models.CASCADE,)
@@ -227,7 +230,7 @@ class NewContact(models.Model):
         return self.email
 
 class ContactReplies(models.Model):
-    contact_id = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    contact_id = models.ForeignKey(NewContact, on_delete=models.CASCADE)
     sender_id = models.ForeignKey(FCMDevice, on_delete=models.CASCADE, related_name="sender_device")
     receiver_id = models.ForeignKey(FCMDevice, on_delete=models.CASCADE, related_name="receiver_device")
     replay = models.TextField()
